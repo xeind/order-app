@@ -1380,9 +1380,12 @@ const uploadImageToServer = async (file: File): Promise<string> => {
   formData.append('image', file)
 
   const token = localStorage.getItem('auth_token')
+  
+  // Use environment variable for API URL, replace /graphql with /upload-image
+  const apiUrl = import.meta.env.VITE_API_URL?.replace('/graphql', '/upload-image') || 'http://localhost:3000/upload-image'
 
   try {
-    const response = await fetch('http://localhost:3000/upload-image', {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         Authorization: token ? `Bearer ${token}` : '',
