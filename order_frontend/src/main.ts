@@ -8,11 +8,29 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 
-const app = createApp(App)
-const pinia = createPinia()
+console.log('Starting app initialization...')
+console.log('API URL:', import.meta.env.VITE_API_URL)
+console.log('Environment:', import.meta.env.VITE_APP_ENV)
 
-app.use(pinia)
-app.use(router)
-app.use(Toast)
-app.provide(DefaultApolloClient, apolloClient)
-app.mount('#app')
+try {
+  const app = createApp(App)
+  const pinia = createPinia()
+
+  app.use(pinia)
+  app.use(router)
+  app.use(Toast)
+  app.provide(DefaultApolloClient, apolloClient)
+  
+  console.log('Mounting app...')
+  app.mount('#app')
+  console.log('App mounted successfully!')
+} catch (error) {
+  console.error('Failed to initialize app:', error)
+  document.body.innerHTML = `
+    <div style="padding: 20px; color: red;">
+      <h1>Application Error</h1>
+      <p>Failed to initialize application: ${error.message}</p>
+      <p>Check console for more details.</p>
+    </div>
+  `
+}

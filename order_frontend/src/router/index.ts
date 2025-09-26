@@ -41,19 +41,30 @@ const router = createRouter({
 
 // Navigation guard for authentication
 router.beforeEach(async (to, _from, next) => {
-    const authStore = useAuthStore()
+    console.log('Router guard executing for:', to.path)
+    
+    try {
+        const authStore = useAuthStore()
+        console.log('Auth state:', { isAuthenticated: authStore.isAuthenticated, hasUser: !!authStore.user })
 
-    if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+        if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+            console.log('Redirecting to login - not authenticated')
+            next('/login')
+            return
+        }
+
+        if (to.meta.requiresGuest && authStore.isAuthenticated) {
+            console.log('Redirecting to home - already authenticated')
+            next('/')
+            return
+        }
+
+        console.log('Proceeding to route:', to.path)
+        next()
+    } catch (error) {
+        console.error('Router guard error:', error)
         next('/login')
-        return
     }
-
-    if (to.meta.requiresGuest && authStore.isAuthenticated) {
-        next('/')
-        return
-    }
-
-    next()
 })
 
 export default router
