@@ -1087,6 +1087,7 @@ const switchToManageOrders = () => {
 }
 
 const closeSuccessPopup = () => {
+  console.log('Closing success popup')
   showSuccessPopup.value = false
   resetOrder()
   currentView.value = 'manage'
@@ -2839,9 +2840,11 @@ void generateOrderPDF
     <!-- Order Success Popup -->
     <div
       v-if="showSuccessPopup"
+      @click="closeSuccessPopup"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
     >
       <div
+        @click.stop
         class="max-h-screen w-full max-w-md overflow-y-auto rounded-lg bg-white shadow-xl"
       >
         <div class="p-6">
@@ -2973,7 +2976,7 @@ void generateOrderPDF
           <!-- Close Button -->
           <div class="flex justify-end">
             <button
-              @click.stop="closeSuccessPopup"
+              @click="closeSuccessPopup"
               class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               Close
