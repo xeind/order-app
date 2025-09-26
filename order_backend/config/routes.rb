@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   post "/graphql", to: "graphql#execute"
+  options "/graphql", to: "graphql#options"
   post "/upload-image", to: "uploads#create"
   get "/uploads/*path", to: "uploads#show"
 

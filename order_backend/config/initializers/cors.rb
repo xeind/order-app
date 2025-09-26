@@ -7,7 +7,19 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173", "http://127.0.0.1:5174", "http://localhost:3000"
+    frontend_urls = [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://127.0.0.1:5173",
+      "http://127.0.0.1:5174",
+      "http://localhost:3000",
+      "https://order-pfmnc96ir-xeins-projects-beed7768.vercel.app"
+    ]
+
+    # Add production frontend URL from environment variable if present
+    frontend_urls << ENV["FRONTEND_URL"] if ENV["FRONTEND_URL"].present?
+
+    origins frontend_urls.compact
 
     resource "*",
       headers: :any,

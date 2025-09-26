@@ -20,6 +20,10 @@ class GraphqlController < ApplicationController
     handle_error_in_development(e)
   end
 
+  def options
+    head :ok
+  end
+
   private
 
   def current_user
