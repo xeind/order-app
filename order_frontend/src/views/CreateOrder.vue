@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-
-// Router
-const router = useRouter()
 
 // Workflow steps
 type WorkflowStep = 'customer' | 'products' | 'checkout'
@@ -88,7 +84,7 @@ const creatingOrder = ref(false)
 
 // Order success modal
 const showSuccessModal = ref(false)
-const successOrderData = ref(null)
+const successOrderData = ref<any>(null)
 
 // Delivery information for online orders
 const deliveryInfo = ref({

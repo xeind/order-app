@@ -948,7 +948,7 @@ const generateOrderPDF = (order: Order) => {
   doc.text('Order Details:', 20, yPos)
   doc.setFontSize(12)
   yPos += 15
-  doc.text(`Order Type: ${order.orderType?.charAt(0).toUpperCase() + order.orderType?.slice(1) || 'N/A'}`, 20, yPos)
+  doc.text(`Order Type: ${order.orderType ? (order.orderType.charAt(0).toUpperCase() + order.orderType.slice(1)) : 'N/A'}`, 20, yPos)
   yPos += 10
   
   if (order.deliveryNotes) {
@@ -1006,7 +1006,7 @@ const generateOrderPDF = (order: Order) => {
   
   // Payment method
   yPos += 20
-  doc.text(`Payment Method: ${order.paymentMethod?.charAt(0).toUpperCase() + order.paymentMethod?.slice(1) || 'N/A'}`, 20, yPos)
+  doc.text(`Payment Method: ${order.paymentMethod ? (order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)) : 'N/A'}`, 20, yPos)
   
   // Save the PDF
   doc.save(`Order_${order.referenceNumber}.pdf`)

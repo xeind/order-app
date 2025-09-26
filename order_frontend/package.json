@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bunx --bun vite",
+    "dev": "bunx vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
-    "vercel-build": "npm run build"
+    "vercel-build": "bun run build"
   },
   "dependencies": {
     "@apollo/client": "^3.14.0",

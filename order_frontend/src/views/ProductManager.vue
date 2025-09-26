@@ -1623,7 +1623,7 @@ const addToCart = (product: Product) => {
       id: product.id,
       name: product.name,
       price: product.price,
-      photoUrl: product.photoUrl,
+      photoUrl: product.photoUrl || undefined,
       stockQuantity: product.stockQuantity,
     },
     1
