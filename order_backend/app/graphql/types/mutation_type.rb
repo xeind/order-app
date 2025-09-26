@@ -9,6 +9,7 @@ module Types
     # Category mutations
     field :create_category, mutation: Mutations::CreateCategory
     field :update_category, mutation: Mutations::UpdateCategory
+    field :delete_category, mutation: Mutations::DeleteCategory
 
     # Product mutations
     field :create_product, mutation: Mutations::CreateProduct
