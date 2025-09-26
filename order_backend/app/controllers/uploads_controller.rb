@@ -24,7 +24,7 @@ class UploadsController < ApplicationController
     begin
       # Create uploads directory if it doesn't exist
       uploads_dir = Rails.root.join("public", "uploads")
-      FileUtils.mkdir_p(uploads_dir)
+      FileUtils.mkdir_p(uploads_dir) unless Dir.exist?(uploads_dir)
 
       # Generate unique filename
       filename = "#{Time.current.to_i}_#{SecureRandom.hex(8)}#{File.extname(image.original_filename)}"
@@ -35,12 +35,13 @@ class UploadsController < ApplicationController
         file.write(image.read)
       end
 
-      # Return URL
-      url = "http://localhost:3000/uploads/#{filename}"
+      # Return URL - use request host for proper URL in all environments
+      url = "#{request.protocol}#{request.host_with_port}/uploads/#{filename}"
       render json: { url: url }, status: :ok
     rescue => e
       Rails.logger.error "Image upload error: #{e.message}"
-      render json: { error: "Failed to upload image" }, status: :internal_server_error
+      Rails.logger.error e.backtrace.join("\n") if Rails.env.development?
+      render json: { error: "Failed to upload image: #{e.message}" }, status: :internal_server_error
     end
   end
 
