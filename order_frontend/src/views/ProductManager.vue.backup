@@ -1,0 +1,799 @@
+<template>
+  <div class="h-screen flex overflow-hidden bg-gray-50">
+    <!-- Main Content Area (70%) -->
+    <div class="flex-1 flex flex-col min-h-0">
+      <!-- Header - Fixed -->
+      <div class="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-semibold text-gray-900">Product Manager</h1>
+            <p class="mt-1 text-sm text-gray-600">Manage your products, inventory, and pricing.</p>
+          </div>
+          <button
+            @click="startAddProduct"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Product
+          </button>
+        </div>
+      </div>
+
+      <!-- Content Area - Scrollable only here -->
+      <div class="flex-1 min-h-0 overflow-y-auto">
+        <!-- Loading State -->
+        <div v-if="loading" class="flex items-center justify-center h-full">
+          <p class="text-gray-500">Loading products...</p>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="flex flex-col items-center justify-center h-full space-y-4">
+          <p class="text-red-600">{{ error }}</p>
+          <button
+            @click="fetchProducts"
+            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+
+        <!-- Products Grid - Only this area scrolls -->
+        <div v-else class="p-6">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div
+              v-for="product in products"
+              :key="product.id"
+              @click="selectProduct(product)"
+              :class="[
+                'cursor-pointer rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-900/5 transition-all hover:shadow-md',
+                selectedProduct?.id === product.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+              ]"
+            >
+              <div class="flex items-start justify-between">
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-sm font-medium text-gray-900 truncate">
+                    {{ product.name }}
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-500 line-clamp-2">
+                    {{ product.description }}
+                  </p>
+                </div>
+                <span
+                  class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                >
+                  {{ product.category.name }}
+                </span>
+              </div>
+
+              <div class="mt-3 flex items-center justify-between">
+                <div class="flex flex-col">
+                  <span class="text-lg font-semibold text-gray-900">${{ product.price }}</span>
+                  <span class="text-xs text-gray-500">Stock: {{ product.stockQuantity }}</span>
+                </div>
+              </div>
+
+              <div v-if="product.productType" class="mt-2">
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-600"
+                >
+                  {{ product.productType }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-if="products.length === 0" class="text-center py-12">
+            <svg
+              class="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m0 0V9a2 2 0 012-2h2m0 0V6a2 2 0 012-2h2"
+              />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No products</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by creating a new product.</p>
+            <div class="mt-6">
+              <button
+                @click="startAddProduct"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add Product
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side Panel (30%) - Fixed, no scrolling -->
+    <div class="w-96 bg-white border-l border-gray-200 flex flex-col">
+      <!-- Panel Header - Fixed -->
+      <div class="flex-shrink-0 px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-medium text-gray-900">
+            {{ panelMode === 'add' ? 'Add Product' : panelMode === 'edit' ? 'Edit Product' : panelMode === 'view' ? 'Product Details' : 'Product Actions' }}
+          </h2>
+          <button
+            v-if="panelMode !== 'default'"
+            @click="resetPanel"
+            class="text-gray-400 hover:text-gray-600"
+          >
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel Content - Scrollable only if content overflows -->
+      <div class="flex-1 min-h-0 overflow-y-auto">
+        <div class="p-6">
+          <!-- Default State -->
+          <div v-if="panelMode === 'default'" class="text-center py-12">
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m0 0V9a2 2 0 012-2h2m0 0V6a2 2 0 012-2h2"
+            />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">Select a product</h3>
+          <p class="mt-1 text-sm text-gray-500">Choose a product from the list to view details or make changes.</p>
+        </div>
+
+        <!-- View Mode -->
+        <div v-else-if="panelMode === 'view' && selectedProduct" class="space-y-6">
+          <div>
+            <h3 class="text-lg font-medium text-gray-900">{{ selectedProduct.name }}</h3>
+            <p class="mt-1 text-sm text-gray-600">{{ selectedProduct.description }}</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Price</label>
+              <p class="mt-1 text-lg font-semibold text-gray-900">${{ selectedProduct.price }}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Stock</label>
+              <p class="mt-1 text-lg font-semibold text-gray-900">{{ selectedProduct.stockQuantity }}</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Category</label>
+            <p class="mt-1 text-sm text-gray-900">{{ selectedProduct.category.name }}</p>
+          </div>
+
+          <div v-if="selectedProduct.productType">
+            <label class="block text-sm font-medium text-gray-700">Product Type</label>
+            <p class="mt-1 text-sm text-gray-900">{{ selectedProduct.productType }}</p>
+          </div>
+
+          <div v-if="selectedProduct.photoUrl">
+            <label class="block text-sm font-medium text-gray-700">Photo URL</label>
+            <p class="mt-1 text-sm text-gray-900 break-all">{{ selectedProduct.photoUrl }}</p>
+          </div>
+
+          <div class="flex space-x-3 pt-4">
+            <button
+              @click="startEditProduct"
+              class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+            >
+              Edit
+            </button>
+            <button
+              @click="confirmDeleteProduct"
+              class="flex-1 bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Add/Edit Form -->
+        <div v-else-if="panelMode === 'add' || panelMode === 'edit'">
+          <form @submit.prevent="panelMode === 'add' ? createProduct() : updateProduct()" class="space-y-6">
+            <div>
+              <label for="panel-name" class="block text-sm font-medium text-gray-700">Product Name</label>
+              <input
+                type="text"
+                id="panel-name"
+                v-model="formData.name"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="Enter product name"
+              />
+            </div>
+
+            <div>
+              <label for="panel-price" class="block text-sm font-medium text-gray-700">Price</label>
+              <div class="relative mt-1 rounded-md shadow-sm">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <span class="text-gray-500 sm:text-sm">$</span>
+                </div>
+                <input
+                  type="number"
+                  id="panel-price"
+                  v-model="formData.price"
+                  step="0.01"
+                  min="0"
+                  required
+                  class="block w-full rounded-md border-gray-300 pl-7 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="panel-category" class="block text-sm font-medium text-gray-700">Category</label>
+              <select
+                id="panel-category"
+                v-model="formData.categoryId"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option value="">Select a category</option>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label for="panel-stock" class="block text-sm font-medium text-gray-700">Stock Quantity</label>
+              <input
+                type="number"
+                id="panel-stock"
+                v-model="formData.stockQuantity"
+                min="0"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="0"
+              />
+            </div>
+
+            <div>
+              <label for="panel-description" class="block text-sm font-medium text-gray-700">Description</label>
+              <textarea
+                id="panel-description"
+                v-model="formData.description"
+                rows="3"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="Enter product description"
+              ></textarea>
+            </div>
+
+            <div>
+              <label for="panel-type" class="block text-sm font-medium text-gray-700">Product Type</label>
+              <input
+                type="text"
+                id="panel-type"
+                v-model="formData.productType"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="e.g., accessory, food, tool"
+              />
+            </div>
+
+            <div>
+              <label for="panel-photo" class="block text-sm font-medium text-gray-700">Photo URL</label>
+              <input
+                type="url"
+                id="panel-photo"
+                v-model="formData.photoUrl"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+
+            <div class="flex space-x-3 pt-4">
+              <button
+                type="button"
+                @click="resetPanel"
+                class="flex-1 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="creating || updating"
+                class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+              >
+                {{ panelMode === 'add' ? (creating ? 'Creating...' : 'Create Product') : (updating ? 'Updating...' : 'Update Product') }}
+              </button>
+            </div>
+          </form>
+
+          <div v-if="createError || updateError" class="mt-4 rounded-md bg-red-50 p-4">
+            <div class="text-sm text-red-700">{{ createError || updateError }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div
+      v-if="showDeleteModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-75"
+    >
+      <div class="mx-4 w-full max-w-sm rounded-lg bg-white p-6">
+        <div class="flex items-center">
+          <div
+            class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100"
+          >
+            <svg
+              class="h-6 w-6 text-red-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.768 0L3.046 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
+            </svg>
+          </div>
+        </div>
+        <div class="mt-3 text-center">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Delete Product</h3>
+          <div class="mt-2">
+            <p class="text-sm text-gray-500">
+              Are you sure you want to delete "{{ selectedProduct?.name }}"? This action cannot be undone.
+            </p>
+          </div>
+        </div>
+        <div class="mt-5 flex space-x-3 sm:mt-6">
+          <button
+            @click="showDeleteModal = false"
+            class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            @click="deleteProduct"
+            :disabled="deleting"
+            class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 sm:text-sm"
+          >
+            {{ deleting ? 'Deleting...' : 'Delete' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
+interface Category {
+  id: string
+  name: string
+  description: string
+}
+
+interface Product {
+  id: string
+  name: string
+  description: string
+  price: number
+  category: Category
+  productType: string | null
+  photoUrl: string | null
+  stockQuantity: number
+  createdAt: string
+  updatedAt: string
+}
+
+interface NewProduct {
+  name: string
+  description: string
+  price: number
+  categoryId: string
+  productType: string
+  photoUrl: string
+  stockQuantity: number
+}
+
+// Panel states
+const panelMode = ref<'default' | 'view' | 'add' | 'edit'>('default')
+const selectedProduct = ref<Product | null>(null)
+
+// Data refs
+const loading = ref(false)
+const error = ref('')
+const products = ref<Product[]>([])
+const categories = ref<Category[]>([])
+
+// Form state
+const creating = ref(false)
+const updating = ref(false)
+const createError = ref('')
+const updateError = ref('')
+
+// Form data for add/edit
+const formData = ref<NewProduct>({
+  name: '',
+  description: '',
+  price: 0,
+  categoryId: '',
+  productType: '',
+  photoUrl: '',
+  stockQuantity: 0,
+})
+
+// Delete state
+const showDeleteModal = ref(false)
+const deleting = ref(false)
+
+// Panel management functions
+const resetPanel = () => {
+  panelMode.value = 'default'
+  selectedProduct.value = null
+  resetForm()
+}
+
+const selectProduct = (product: Product) => {
+  selectedProduct.value = product
+  panelMode.value = 'view'
+}
+
+const startAddProduct = () => {
+  selectedProduct.value = null
+  resetForm()
+  panelMode.value = 'add'
+}
+
+const startEditProduct = () => {
+  if (!selectedProduct.value) return
+  
+  formData.value = {
+    name: selectedProduct.value.name,
+    description: selectedProduct.value.description || '',
+    price: selectedProduct.value.price,
+    categoryId: selectedProduct.value.category.id,
+    productType: selectedProduct.value.productType || '',
+    photoUrl: selectedProduct.value.photoUrl || '',
+    stockQuantity: selectedProduct.value.stockQuantity,
+  }
+  panelMode.value = 'edit'
+}
+
+const resetForm = () => {
+  formData.value = {
+    name: '',
+    description: '',
+    price: 0,
+    categoryId: '',
+    productType: '',
+    photoUrl: '',
+    stockQuantity: 0,
+  }
+  createError.value = ''
+  updateError.value = ''
+}
+
+// API functions
+const fetchCategories = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          query GetCategories {
+            categories {
+              id
+              name
+              description
+            }
+          }
+        `,
+      }),
+    })
+
+    const data = await response.json()
+    if (data.errors) {
+      console.error('Error fetching categories:', data.errors)
+    } else {
+      categories.value = data.data.categories
+    }
+  } catch (err) {
+    console.error('Error fetching categories:', err)
+  }
+}
+
+const fetchProducts = async () => {
+  loading.value = true
+  error.value = ''
+
+  try {
+    const response = await fetch('http://localhost:3000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          query GetProducts {
+            products {
+              id
+              name
+              description
+              price
+              category {
+                id
+                name
+                description
+              }
+              productType
+              photoUrl
+              stockQuantity
+              createdAt
+              updatedAt
+            }
+          }
+        `,
+      }),
+    })
+
+    const data = await response.json()
+
+    if (data.errors) {
+      error.value = `GraphQL Error: ${data.errors[0].message}`
+    } else {
+      products.value = data.data.products
+    }
+  } catch (err) {
+    error.value = `Connection Error: ${err}`
+  } finally {
+    loading.value = false
+  }
+}
+
+const createProduct = async () => {
+  creating.value = true
+  createError.value = ''
+
+  try {
+    const response = await fetch('http://localhost:3000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          mutation CreateProduct(
+            $name: String!,
+            $description: String,
+            $price: Float!,
+            $categoryId: ID!,
+            $productType: String,
+            $stockQuantity: Int!
+          ) {
+            createProduct(
+              name: $name,
+              description: $description,
+              price: $price,
+              categoryId: $categoryId,
+              productType: $productType,
+              stockQuantity: $stockQuantity
+            ) {
+              id
+              name
+              description
+              price
+              category {
+                id
+                name
+                description
+              }
+              productType
+              photoUrl
+              stockQuantity
+              createdAt
+              updatedAt
+            }
+          }
+        `,
+        variables: {
+          name: formData.value.name,
+          description: formData.value.description || null,
+          price: formData.value.price,
+          categoryId: formData.value.categoryId,
+          productType: formData.value.productType || null,
+          stockQuantity: formData.value.stockQuantity,
+        },
+      }),
+    })
+
+    const data = await response.json()
+
+    if (data.errors) {
+      createError.value = data.errors[0].message
+    } else {
+      // Add the new product to the list
+      products.value.push(data.data.createProduct)
+      
+      // Select the new product and show it
+      selectedProduct.value = data.data.createProduct
+      panelMode.value = 'view'
+      
+      console.log('Product created successfully!')
+    }
+  } catch (err) {
+    createError.value = `Network error: ${err}`
+  } finally {
+    creating.value = false
+  }
+}
+
+const updateProduct = async () => {
+  if (!selectedProduct.value) return
+  
+  updating.value = true
+  updateError.value = ''
+
+  try {
+    const response = await fetch('http://localhost:3000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          mutation UpdateProduct(
+            $id: ID!,
+            $name: String,
+            $description: String,
+            $price: Float,
+            $categoryId: ID,
+            $productType: String,
+            $stockQuantity: Int
+          ) {
+            updateProduct(
+              id: $id,
+              name: $name,
+              description: $description,
+              price: $price,
+              categoryId: $categoryId,
+              productType: $productType,
+              stockQuantity: $stockQuantity
+            ) {
+              id
+              name
+              description
+              price
+              category {
+                id
+                name
+                description
+              }
+              productType
+              photoUrl
+              stockQuantity
+              createdAt
+              updatedAt
+            }
+          }
+        `,
+        variables: {
+          id: selectedProduct.value.id,
+          name: formData.value.name,
+          description: formData.value.description || null,
+          price: formData.value.price,
+          categoryId: formData.value.categoryId,
+          productType: formData.value.productType || null,
+          stockQuantity: formData.value.stockQuantity,
+        },
+      }),
+    })
+
+    const data = await response.json()
+
+    if (data.errors) {
+      updateError.value = data.errors[0].message
+    } else {
+      // Update the product in the list
+      const index = products.value.findIndex(p => p.id === selectedProduct.value!.id)
+      if (index !== -1) {
+        products.value[index] = data.data.updateProduct
+      }
+      
+      // Update selected product and switch to view mode
+      selectedProduct.value = data.data.updateProduct
+      panelMode.value = 'view'
+      
+      console.log('Product updated successfully!')
+    }
+  } catch (err) {
+    updateError.value = `Network error: ${err}`
+  } finally {
+    updating.value = false
+  }
+}
+
+const confirmDeleteProduct = () => {
+  if (selectedProduct.value) {
+    showDeleteModal.value = true
+  }
+}
+
+const deleteProduct = async () => {
+  if (!selectedProduct.value) return
+
+  deleting.value = true
+
+  try {
+    const response = await fetch('http://localhost:3000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          mutation DeleteProduct($id: ID!) {
+            deleteProduct(id: $id)
+          }
+        `,
+        variables: {
+          id: selectedProduct.value.id,
+        },
+      }),
+    })
+
+    const data = await response.json()
+
+    if (data.errors) {
+      console.error('Error deleting product:', data.errors[0].message)
+    } else {
+      if (data.data.deleteProduct) {
+        // Remove the product from the list
+        products.value = products.value.filter(p => p.id !== selectedProduct.value!.id)
+        
+        // Reset panel
+        resetPanel()
+        
+        console.log('Product deleted successfully!')
+      } else {
+        console.error('Product not found or could not be deleted')
+      }
+    }
+  } catch (err) {
+    console.error('Network error:', err)
+  } finally {
+    deleting.value = false
+    showDeleteModal.value = false
+  }
+}
+
+// Initialize data on mount
+onMounted(() => {
+  fetchProducts()
+  fetchCategories()
+})
+</script>

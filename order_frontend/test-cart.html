@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cart LocalStorage Test</title>
+</head>
+<body>
+    <h1>Cart LocalStorage Test</h1>
+    <div id="output"></div>
+    
+    <script>
+        // Test localStorage operations
+        function testLocalStorage() {
+            const output = document.getElementById('output');
+            let result = '';
+            
+            try {
+                // Test write
+                const testData = [
+                    { id: '1', name: 'Test Product', price: 10.99, quantity: 2 }
+                ];
+                localStorage.setItem('cart-items', JSON.stringify(testData));
+                result += 'Write test: SUCCESS<br>';
+                
+                // Test read
+                const retrieved = localStorage.getItem('cart-items');
+                if (retrieved) {
+                    const parsed = JSON.parse(retrieved);
+                    result += `Read test: SUCCESS - Found ${parsed.length} items<br>`;
+                    result += `Item: ${parsed[0].name} - $${parsed[0].price}<br>`;
+                } else {
+                    result += 'Read test: FAILED - No data found<br>';
+                }
+                
+                // Clean up
+                localStorage.removeItem('cart-items');
+                result += 'Cleanup: SUCCESS<br>';
+                
+            } catch (error) {
+                result += `ERROR: ${error.message}<br>`;
+            }
+            
+            output.innerHTML = result;
+        }
+        
+        // Run test immediately
+        testLocalStorage();
+    </script>
+</body>
+</html>

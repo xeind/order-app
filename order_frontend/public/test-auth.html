@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Auth Token</title>
+</head>
+<body>
+    <h1>Auth Token Tester</h1>
+    <button onclick="loginAndSetToken()">Login & Set Token</button>
+    <button onclick="setToken()">Set Valid Token</button>
+    <button onclick="clearToken()">Clear Token</button>
+    <button onclick="checkToken()">Check Token</button>
+    <button onclick="goToOrders()">Go to Orders</button>
+    <button onclick="goToProducts()">Go to Products</button>
+
+    <div id="output" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #f5f5f5;">
+        Output will appear here...
+    </div>
+
+    <script>
+        function log(message) {
+            console.log(message);
+            const output = document.getElementById('output');
+            output.innerHTML += '<div>' + JSON.stringify(message, null, 2) + '</div>';
+        }
+        
+        async function loginAndSetToken() {
+            try {
+                log('Attempting login via GraphQL...');
+                
+                const response = await fetch('http://localhost:3000/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: `mutation { 
+                            loginUser(email: "manager@orderapp.com", password: "password123") { 
+                                user { id email role } 
+                                token 
+                                errors 
+                            } 
+                        }`
+                    })
+                });
+                
+                const data = await response.json();
+                log('Login response: ' + JSON.stringify(data, null, 2));
+                
+                if (data.data && data.data.loginUser && data.data.loginUser.token) {
+                    const token = data.data.loginUser.token;
+                    const user = data.data.loginUser.user;
+                    
+                    localStorage.setItem('auth_token', token);
+                    localStorage.setItem('auth_user', JSON.stringify(user));
+                    
+                    log('✅ Login successful! Token and user set.');
+                    log('Token: ' + token.substring(0, 50) + '...');
+                    log('User: ' + JSON.stringify(user, null, 2));
+                } else if (data.data && data.data.loginUser && data.data.loginUser.errors) {
+                    log('❌ Login failed: ' + data.data.loginUser.errors.join(', '));
+                } else {
+                    log('❌ Unexpected response format');
+                }
+            } catch (error) {
+                log('❌ Login error: ' + error.message);
+            }
+        }
+        
+        function setToken() {
+            // Use a fresh token
+            const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTg5MzMxODJ9.5UXBcawDaTzQ2-C72mCE6Jwdccb13XskmXtfDYljAyk';
+            const user = {
+                id: '1',
+                email: 'manager@orderapp.com',
+                role: 'manager',
+                username: 'manager'
+            };
+            
+            localStorage.setItem('auth_token', token);
+            localStorage.setItem('auth_user', JSON.stringify(user));
+            
+            log('✅ Token set manually');
+            log('Token: ' + token.substring(0, 50) + '...');
+            log('User: ' + JSON.stringify(user, null, 2));
+        }
+        
+        function clearToken() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_user');
+            log('✅ Tokens cleared');
+        }
+        
+        function checkToken() {
+            const token = localStorage.getItem('auth_token');
+            const user = localStorage.getItem('auth_user');
+            
+            log('Current token: ' + (token ? token.substring(0, 50) + '...' : 'null'));
+            log('Current user: ' + user);
+        }
+        
+        function goToOrders() {
+            window.location.href = '/orders';
+        }
+        
+        function goToProducts() {
+            window.location.href = '/products';
+        }
+        
+        // Test GraphQL query with current token
+        async function testOrdersQuery() {
+            try {
+                const token = localStorage.getItem('auth_token');
+                if (!token) {
+                    log('❌ No token found. Please set token first.');
+                    return;
+                }
+                
+                log('Testing orders query with token...');
+                
+                const response = await fetch('http://localhost:3000/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        query: '{ orders { id referenceNumber status total customer { fullName } } }'
+                    })
+                });
+                
+                const data = await response.json();
+                log('Orders query response: ' + JSON.stringify(data, null, 2));
+                
+                if (data.data && data.data.orders) {
+                    log('✅ Orders query successful! Found ' + data.data.orders.length + ' orders');
+                } else {
+                    log('❌ Orders query failed');
+                }
+            } catch (error) {
+                log('❌ Query error: ' + error.message);
+            }
+        }
+        
+        // Auto-check token on page load
+        window.onload = function() {
+            checkToken();
+        };
+    </script>
+    
+    <hr>
+    <h2>Additional Tests</h2>
+    <button onclick="testOrdersQuery()">Test Orders GraphQL Query</button>
+</body>
+</html>

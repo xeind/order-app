@@ -1,0 +1,5 @@
+=> Booting Puma
+=> Rails 7.1.5.2 application starting in development 
+=> Run `bin/rails server --help` for more startup options
+A server is already running (pid: 25376, file: /Users/xein/dev-test/ruby-env/order_app/order_backend/tmp/pids/server.pid).
+Exiting

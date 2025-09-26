@@ -1,0 +1,84 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+  <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <h1 style="color: #333; text-align: center; border-bottom: 3px solid #007bff; padding-bottom: 20px; margin-bottom: 30px;">
+      Order Confirmation
+    </h1>
+
+    <div style="background-color: #e3f2fd; padding: 15px; border-radius: 5px; margin-bottom: 25px;">
+      <h2 style="color: #1976d2; margin: 0 0 10px 0;">Order Details</h2>
+      <p style="margin: 5px 0;"><strong>Order Number:</strong> <%= @order.reference_number %></p>
+      <p style="margin: 5px 0;"><strong>Order Date:</strong> <%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+      <p style="margin: 5px 0;"><strong>Status:</strong> <span style="color: #28a745; font-weight: bold;"><%= @order.status.capitalize %></span></p>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+      <h2 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">Customer Information</h2>
+      <p style="margin: 5px 0;"><strong>Name:</strong> <%= @customer.full_name %></p>
+      <p style="margin: 5px 0;"><strong>Email:</strong> <%= @customer.email %></p>
+      <p style="margin: 5px 0;"><strong>Phone:</strong> <%= @customer.mobile %></p>
+      <% if @order.delivery_address.present? %>
+        <p style="margin: 5px 0;"><strong>Delivery Address:</strong> <%= @order.delivery_address %></p>
+      <% end %>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+      <h2 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">Order Items</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <thead>
+          <tr style="background-color: #f8f9fa;">
+            <th style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">Product</th>
+            <th style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">Quantity</th>
+            <th style="border: 1px solid #dee2e6; padding: 12px; text-align: right;">Unit Price</th>
+            <th style="border: 1px solid #dee2e6; padding: 12px; text-align: right;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @order_items.each do |item| %>
+            <tr>
+              <td style="border: 1px solid #dee2e6; padding: 12px;"><%= item.product.name %></td>
+              <td style="border: 1px solid #dee2e6; padding: 12px; text-align: center;"><%= item.quantity %></td>
+              <td style="border: 1px solid #dee2e6; padding: 12px; text-align: right;">₱<%= number_with_precision(item.unit_price, precision: 2) %></td>
+              <td style="border: 1px solid #dee2e6; padding: 12px; text-align: right;">₱<%= number_with_precision(item.quantity * item.unit_price, precision: 2) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 25px;">
+      <table style="width: 100%; font-size: 16px;">
+        <tr>
+          <td style="padding: 5px 0;"><strong>Subtotal:</strong></td>
+          <td style="text-align: right; padding: 5px 0;">₱<%= number_with_precision(@subtotal, precision: 2) %></td>
+        </tr>
+        <% if @discount_amount > 0 %>
+          <tr>
+            <td style="padding: 5px 0; color: #28a745;"><strong>Discount (<%= @order.voucher.code %>):</strong></td>
+            <td style="text-align: right; padding: 5px 0; color: #28a745;">-₱<%= number_with_precision(@discount_amount, precision: 2) %></td>
+          </tr>
+        <% end %>
+        <tr style="border-top: 2px solid #007bff; font-size: 18px; color: #007bff;">
+          <td style="padding: 10px 0;"><strong>Total:</strong></td>
+          <td style="text-align: right; padding: 10px 0;"><strong>₱<%= number_with_precision(@total, precision: 2) %></strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <% if @order.payment_method.present? %>
+      <div style="margin-bottom: 25px;">
+        <h3 style="color: #333;">Payment Information</h3>
+        <p><strong>Payment Method:</strong> <%= @order.payment_method.humanize %></p>
+      </div>
+    <% end %>
+
+    <div style="background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+      <h3 style="margin: 0 0 10px 0;">Thank you for your order!</h3>
+      <p style="margin: 0;">We're processing your order and will notify you when it's ready for pickup or delivery.</p>
+    </div>
+
+    <div style="text-align: center; color: #6c757d; font-size: 14px; border-top: 1px solid #eee; padding-top: 20px;">
+      <p>If you have any questions about your order, please contact us.</p>
+      <p style="margin: 5px 0;">This is an automated email, please do not reply.</p>
+    </div>
+  </div>
+</div>

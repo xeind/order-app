@@ -1,0 +1,49 @@
+ORDER CONFIRMATION
+==================
+
+Thank you for your order!
+
+ORDER DETAILS
+-------------
+Order Number: <%= @order.reference_number %>
+Order Date: <%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+Status: <%= @order.status.capitalize %>
+
+CUSTOMER INFORMATION
+--------------------
+Name: <%= @customer.full_name %>
+Email: <%= @customer.email %>
+Phone: <%= @customer.mobile %>
+<% if @order.delivery_address.present? %>
+Delivery Address: <%= @order.delivery_address %>
+<% end %>
+
+ORDER ITEMS
+-----------
+<% @order_items.each do |item| %>
+<%= item.product.name %>
+Quantity: <%= item.quantity %>
+Unit Price: ₱<%= number_with_precision(item.unit_price, precision: 2) %>
+Total: ₱<%= number_with_precision(item.quantity * item.unit_price, precision: 2) %>
+
+<% end %>
+
+ORDER SUMMARY
+-------------
+Subtotal: ₱<%= number_with_precision(@subtotal, precision: 2) %>
+<% if @discount_amount > 0 %>
+Discount (<%= @order.voucher.code %>): -₱<%= number_with_precision(@discount_amount, precision: 2) %>
+<% end %>
+TOTAL: ₱<%= number_with_precision(@total, precision: 2) %>
+
+<% if @order.payment_method.present? %>
+PAYMENT INFORMATION
+-------------------
+Payment Method: <%= @order.payment_method.humanize %>
+
+<% end %>
+We're processing your order and will notify you when it's ready for pickup or delivery.
+
+If you have any questions about your order, please contact us.
+
+This is an automated email, please do not reply.

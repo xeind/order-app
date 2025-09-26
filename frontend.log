@@ -1,0 +1,118 @@
+
+  VITE v6.3.6  ready in 330 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+3:44:39 PM [vite] (client) hmr update /src/components/LoginForm.vue, /src/style.css
+3:44:50 PM [vite] (client) hmr update /src/components/LoginForm.vue, /src/style.css
+3:45:10 PM [vite] (client) hmr update /src/components/LoginForm.vue, /src/style.css
+3:47:26 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+3:47:50 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+3:48:04 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:9:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵          ~~~~~~~~~~~
+
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:22:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵                       ~~~~~~~~~~~~~
+
+3:48:04 PM [vite] (client) error while updating dependencies:
+Error: Build failed with 2 errors:
+node_modules/@vue/apollo-composable/dist/index.mjs:194:9: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+node_modules/@vue/apollo-composable/dist/index.mjs:194:22: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+    at failureErrorWithLog (/Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1467:15)
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:926:25
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1345:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+3:48:13 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:9:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵          ~~~~~~~~~~~
+
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:22:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵                       ~~~~~~~~~~~~~
+
+3:48:13 PM [vite] (client) error while updating dependencies:
+Error: Build failed with 2 errors:
+node_modules/@vue/apollo-composable/dist/index.mjs:194:9: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+node_modules/@vue/apollo-composable/dist/index.mjs:194:22: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+    at failureErrorWithLog (/Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1467:15)
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:926:25
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1345:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+3:48:48 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:9:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵          ~~~~~~~~~~~
+
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:22:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵                       ~~~~~~~~~~~~~
+
+3:48:48 PM [vite] (client) error while updating dependencies:
+Error: Build failed with 2 errors:
+node_modules/@vue/apollo-composable/dist/index.mjs:194:9: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+node_modules/@vue/apollo-composable/dist/index.mjs:194:22: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+    at failureErrorWithLog (/Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1467:15)
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:926:25
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1345:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+3:49:21 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:9:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵          ~~~~~~~~~~~
+
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:22:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵                       ~~~~~~~~~~~~~
+
+3:49:21 PM [vite] (client) error while updating dependencies:
+Error: Build failed with 2 errors:
+node_modules/@vue/apollo-composable/dist/index.mjs:194:9: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+node_modules/@vue/apollo-composable/dist/index.mjs:194:22: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+    at failureErrorWithLog (/Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1467:15)
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:926:25
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1345:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+3:49:34 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+3:49:44 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+3:49:56 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+3:50:10 PM [vite] (client) hmr update /src/views/ProductManager.vue, /src/style.css
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:9:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵          ~~~~~~~~~~~
+
+✘ [ERROR] No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+
+    node_modules/@vue/apollo-composable/dist/index.mjs:194:22:
+      194 │ import { ApolloError, isApolloError } from "@apollo/client/core/i...
+          ╵                       ~~~~~~~~~~~~~
+
+3:50:38 PM [vite] (client) error while updating dependencies:
+Error: Build failed with 2 errors:
+node_modules/@vue/apollo-composable/dist/index.mjs:194:9: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "ApolloError"
+node_modules/@vue/apollo-composable/dist/index.mjs:194:22: ERROR: No matching export in "node_modules/@apollo/client/legacyEntryPoints/core/index.js" for import "isApolloError"
+    at failureErrorWithLog (/Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1467:15)
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:926:25
+    at /Users/xein/dev-test/ruby-env/order_app/order_frontend/node_modules/esbuild/lib/main.js:1345:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

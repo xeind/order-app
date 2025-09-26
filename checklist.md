@@ -1,0 +1,4 @@
+- Address on the Manage Orders Page
+- Close button after successful order placement doesnt work
+- Quick add-to-cart buttons from the Product Manager like below the edit and delete- Updating a product says status code 50
+- Product cards has the text ">" above
