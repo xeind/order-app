@@ -13,7 +13,8 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       "http://127.0.0.1:5173",
       "http://127.0.0.1:5174",
       "http://localhost:3000",
-      "https://order-pfmnc96ir-xeins-projects-beed7768.vercel.app"
+      "https://order-pfmnc96ir-xeins-projects-beed7768.vercel.app",
+      "https://order-app-one-eosin.vercel.app"
     ]
 
     # Add production frontend URL from environment variable if present
