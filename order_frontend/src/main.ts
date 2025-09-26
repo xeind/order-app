@@ -26,10 +26,11 @@ try {
   console.log('App mounted successfully!')
 } catch (error) {
   console.error('Failed to initialize app:', error)
+  const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
   document.body.innerHTML = `
     <div style="padding: 20px; color: red;">
       <h1>Application Error</h1>
-      <p>Failed to initialize application: ${error.message}</p>
+      <p>Failed to initialize application: ${errorMessage}</p>
       <p>Check console for more details.</p>
     </div>
   `
