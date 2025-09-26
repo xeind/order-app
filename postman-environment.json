@@ -1,0 +1,19 @@
+{
+  "id": "order-app-environment",
+  "name": "Order App Environment",
+  "values": [
+    {
+      "key": "API_URL",
+      "value": "https://order-backend-w66j.onrender.com",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "AUTH_TOKEN",
+      "value": "",
+      "type": "default", 
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

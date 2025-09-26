@@ -5,7 +5,7 @@
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
           <div class="flex flex-shrink-0 items-center">
-            <h1 class="text-xl font-bold text-gray-900">Gosyomo</h1>
+            <h1 class="text-xl font-bold text-gray-900">Goshomo</h1>
           </div>
           <div class="flex space-x-8">
             <button

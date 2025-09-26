@@ -1,0 +1,477 @@
+{
+  "info": {
+    "name": "Order App GraphQL API",
+    "description": "Complete GraphQL API collection for the Order Management System with automated result compilation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.loginUser.token).to.exist;",
+                  "    pm.globals.set('AUTH_TOKEN', responseJson.data.loginUser.token);",
+                  "    ",
+                  "    // Store login result for compilation",
+                  "    const loginResult = {",
+                  "        timestamp: new Date().toISOString(),",
+                  "        operation: 'LOGIN',",
+                  "        status: 'SUCCESS',",
+                  "        user: responseJson.data.loginUser.user,",
+                  "        token_length: responseJson.data.loginUser.token.length",
+                  "    };",
+                  "    pm.globals.set('COMPILATION_LOGIN', JSON.stringify(loginResult));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation Login($email: String!, $password: String!) {\n  loginUser(email: $email, password: $password) {\n    token\n    user {\n      id\n      email\n      role\n    }\n  }\n}",
+                "variables": "{\n  \"email\": \"manager@orderapp.com\",\n  \"password\": \"password123\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{API_URL}}/graphql",
+              "host": ["{{API_URL}}"],
+              "path": ["graphql"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Products fetched successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.products).to.be.an('array');",
+                  "    ",
+                  "    // Store products result for compilation",
+                  "    const productsResult = {",
+                  "        timestamp: new Date().toISOString(),",
+                  "        operation: 'GET_PRODUCTS',",
+                  "        status: 'SUCCESS',",
+                  "        count: responseJson.data.products.length,",
+                  "        products: responseJson.data.products.map(p => ({",
+                  "            id: p.id,",
+                  "            name: p.name,",
+                  "            price: p.price,",
+                  "            stockQuantity: p.stockQuantity",
+                  "        }))",
+                  "    };",
+                  "    pm.globals.set('COMPILATION_PRODUCTS', JSON.stringify(productsResult));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetProducts {\n  products {\n    id\n    name\n    description\n    price\n    category {\n      id\n      name\n      description\n    }\n    productType\n    photoUrl\n    stockQuantity\n    createdAt\n    updatedAt\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "{{API_URL}}/graphql",
+              "host": ["{{API_URL}}"],
+              "path": ["graphql"]
+            }
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateProduct(\n  $name: String!\n  $description: String\n  $price: Float!\n  $categoryId: ID!\n  $productType: String\n  $photoUrl: String\n  $stockQuantity: Int!\n) {\n  createProduct(\n    name: $name\n    description: $description\n    price: $price\n    categoryId: $categoryId\n    productType: $productType\n    photoUrl: $photoUrl\n    stockQuantity: $stockQuantity\n  ) {\n    product {\n      id\n      name\n      description\n      price\n      category {\n        id\n        name\n        description\n      }\n      productType\n      photoUrl\n      stockQuantity\n      createdAt\n      updatedAt\n    }\n  }\n}",
+                "variables": "{\n  \"name\": \"Test Product\",\n  \"description\": \"A test product description\",\n  \"price\": 99.99,\n  \"categoryId\": \"1\",\n  \"productType\": \"physical\",\n  \"photoUrl\": \"https://example.com/photo.jpg\",\n  \"stockQuantity\": 100\n}"
+              }
+            },
+            "url": {
+              "raw": "{{API_URL}}/graphql",
+              "host": ["{{API_URL}}"],
+              "path": ["graphql"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Categories fetched successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.categories).to.be.an('array');",
+                  "    ",
+                  "    // Store categories result for compilation",
+                  "    const categoriesResult = {",
+                  "        timestamp: new Date().toISOString(),",
+                  "        operation: 'GET_CATEGORIES',",
+                  "        status: 'SUCCESS',",
+                  "        count: responseJson.data.categories.length,",
+                  "        categories: responseJson.data.categories",
+                  "    };",
+                  "    pm.globals.set('COMPILATION_CATEGORIES', JSON.stringify(categoriesResult));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetCategories {\n  categories {\n    id\n    name\n    description\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "{{API_URL}}/graphql",
+              "host": ["{{API_URL}}"],
+              "path": ["graphql"]
+            }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateCategory($name: String!, $description: String) {\n  createCategory(name: $name, description: $description) {\n    category {\n      id\n      name\n      description\n    }\n  }\n}",
+                "variables": "{\n  \"name\": \"New Category\",\n  \"description\": \"Category description\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{API_URL}}/graphql",
+              "host": ["{{API_URL}}"],
+              "path": ["graphql"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Get All Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Orders fetched successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.data.orders).to.be.an('array');",
+                  "    ",
+                  "    // Store orders result for compilation",
+                  "    const ordersResult = {",
+                  "        timestamp: new Date().toISOString(),",
+                  "        operation: 'GET_ORDERS',",
+                  "        status: 'SUCCESS',",
+                  "        count: responseJson.data.orders.length,",
+                  "        orders: responseJson.data.orders.map(o => ({",
+                  "            id: o.id,",
+                  "            referenceNumber: o.referenceNumber,",
+                  "            status: o.status,",
+                  "            total: o.total,",
+                  "            orderType: o.orderType,",
+                  "            itemCount: o.orderItems ? o.orderItems.length : 0",
+                  "        }))",
+                  "    };",
+                  "    pm.globals.set('COMPILATION_ORDERS', JSON.stringify(ordersResult));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetOrders {\n  orders {\n    id\n    referenceNumber\n    customer {\n      id\n      firstName\n      lastName\n      email\n      mobile\n      fullName\n    }\n    orderItems {\n      quantity\n      product {\n        id\n        name\n        price\n        photoUrl\n      }\n    }\n    status\n    total\n    orderType\n    shippingMethod\n    paymentMethod\n    deliveryAddress\n    deliveryNotes\n    createdAt\n    updatedAt\n  }\n}"
+              }
+            },
+            "url": {
+              "raw": "{{API_URL}}/graphql",
+              "host": ["{{API_URL}}"],
+              "path": ["graphql"]
+            }
+          }
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateOrder(\n  $customerId: ID!\n  $items: [OrderItemInput!]!\n  $orderType: String!\n  $shippingMethod: String\n  $paymentMethod: String!\n  $voucherCode: String\n  $deliveryAddress: String\n  $deliveryNotes: String\n  $deliveryDatePreference: ISO8601DateTime\n) {\n  createOrder(\n    customerId: $customerId\n    items: $items\n    orderType: $orderType\n    shippingMethod: $shippingMethod\n    paymentMethod: $paymentMethod\n    voucherCode: $voucherCode\n    deliveryAddress: $deliveryAddress\n    deliveryNotes: $deliveryNotes\n    deliveryDatePreference: $deliveryDatePreference\n  ) {\n    id\n    referenceNumber\n    status\n    orderType\n    paymentMethod\n    shippingMethod\n    subtotal\n    discountAmount\n    total\n    deliveryAddress\n    deliveryNotes\n    deliveryDatePreference\n    customer {\n      id\n      firstName\n      lastName\n      email\n      mobile\n    }\n    voucher {\n      code\n      name\n      discountType\n      discountValue\n    }\n    createdAt\n  }\n}",
+                "variables": "{\n  \"customerId\": \"1\",\n  \"items\": [\n    {\n      \"productId\": \"1\",\n      \"quantity\": 2\n    }\n  ],\n  \"orderType\": \"delivery\",\n  \"shippingMethod\": \"standard\",\n  \"paymentMethod\": \"cash_on_delivery\",\n  \"deliveryAddress\": \"123 Test St, Test City\",\n  \"deliveryNotes\": \"Please ring doorbell\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{API_URL}}/graphql",
+              "host": ["{{API_URL}}"],
+              "path": ["graphql"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Search Customers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query SearchCustomers($search: String!) {\n  customers(search: $search) {\n    id\n    firstName\n    lastName\n    email\n    mobile\n    fullName\n  }\n}",
+                "variables": "{\n  \"search\": \"john\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{API_URL}}/graphql",
+              "host": ["{{API_URL}}"],
+              "path": ["graphql"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "File Uploads",
+      "item": [
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{API_URL}}/upload-image",
+              "host": ["{{API_URL}}"],
+              "path": ["upload-image"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Result Compilation",
+      "item": [
+        {
+          "name": "Generate Full Report",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// This request compiles all previous results",
+                  "const compilation = {",
+                  "    reportGenerated: new Date().toISOString(),",
+                  "    summary: {",
+                  "        totalOperations: 0,",
+                  "        successfulOperations: 0",
+                  "    },",
+                  "    results: {}",
+                  "};",
+                  "",
+                  "// Collect all stored results",
+                  "const operations = ['LOGIN', 'PRODUCTS', 'CATEGORIES', 'ORDERS'];",
+                  "operations.forEach(op => {",
+                  "    const stored = pm.globals.get(`COMPILATION_${op}`);",
+                  "    if (stored) {",
+                  "        const data = JSON.parse(stored);",
+                  "        compilation.results[op] = data;",
+                  "        compilation.summary.totalOperations++;",
+                  "        if (data.status === 'SUCCESS') {",
+                  "            compilation.summary.successfulOperations++;",
+                  "        }",
+                  "    }",
+                  "});",
+                  "",
+                  "// Store the final compilation",
+                  "pm.globals.set('FINAL_COMPILATION', JSON.stringify(compilation, null, 2));",
+                  "",
+                  "console.log('=== GRAPHQL API COMPILATION REPORT ===');",
+                  "console.log(JSON.stringify(compilation, null, 2));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Compilation report generated', function () {",
+                  "    const compilation = pm.globals.get('FINAL_COMPILATION');",
+                  "    pm.expect(compilation).to.exist;",
+                  "    console.log('Final compilation stored in FINAL_COMPILATION global variable');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{API_URL}}/health",
+              "host": ["{{API_URL}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "API_URL",
+      "value": "https://order-backend-w66j.onrender.com",
+      "type": "string"
+    },
+    {
+      "key": "AUTH_TOKEN",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

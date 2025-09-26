@@ -5,7 +5,7 @@
     <div class="w-full max-w-md space-y-8">
       <div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Gosyomo
+          Goshomo
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
           Sign in for your point-of-sale system

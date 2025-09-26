@@ -1,6 +1,6 @@
-# 🚀 DEPLOYMENT INSTRUCTIONS
+# DEPLOYMENT INSTRUCTIONS
 
-## 📋 Pre-Deployment Checklist
+## Pre-Deployment Checklist
 
 ### 1. Setup Git Repository (if not already done)
 ```bash
@@ -8,11 +8,11 @@ git init
 git add .
 git commit -m "Initial commit with deployment configuration"
 git branch -M main
-git remote add origin https://github.com/yourusername/order-app.git
+git remote add origin https://github.com/yourusername/goshomo.git
 git push -u origin main
 ```
 
-## 🔧 RENDER DEPLOYMENT (Backend)
+## RENDER DEPLOYMENT (Backend)
 
 ### Step 1: Create Render Account
 1. Go to https://render.com
@@ -23,7 +23,7 @@ git push -u origin main
 1. Click "New +" → "Web Service"
 2. Connect your GitHub repository
 3. Configure deployment:
-   - **Name**: `order-backend` 
+   - **Name**: `goshomo-backend` 
    - **Environment**: `Ruby`
    - **Build Command**: `./bin/render-build.sh`
    - **Start Command**: `bundle exec puma -C config/puma.rb`
@@ -31,7 +31,7 @@ git push -u origin main
 
 ### Step 3: Add Database
 1. Go to Dashboard → "New +" → "PostgreSQL"
-2. Name: `order-db`
+2. Name: `goshomo-db`
 3. Wait for database to be ready
 
 ### Step 4: Configure Environment Variables
@@ -41,7 +41,7 @@ RAILS_MASTER_KEY=c73761018de883f4a0bff2c4c9f35dcbc025b358ed32405a11ff3a901fbb85e
 DATABASE_URL=[Will be auto-populated from your PostgreSQL service]
 ```
 
-## 🌐 VERCEL DEPLOYMENT (Frontend)
+## VERCEL DEPLOYMENT (Frontend)
 
 ### Step 1: Create Vercel Account  
 1. Go to https://vercel.com
@@ -63,7 +63,7 @@ VITE_API_URL=https://your-backend-app.onrender.com/graphql
 VITE_APP_ENV=production
 ```
 
-## ⚡ QUICK COMMANDS AFTER DEPLOYMENT
+## QUICK COMMANDS AFTER DEPLOYMENT
 
 ### Test Backend GraphQL:
 ```bash
@@ -75,12 +75,12 @@ curl -X POST https://your-backend-app.onrender.com/graphql \
 ### Test Frontend:
 Visit: `https://your-frontend-app.vercel.app`
 
-## 🎯 PRODUCTION URLS
+## PRODUCTION URLS
 - **Backend**: `https://your-backend-app.onrender.com`
 - **Frontend**: `https://your-frontend-app.vercel.app`
 - **GraphQL Playground**: `https://your-backend-app.onrender.com/graphql`
 
-## 🔧 POST-DEPLOYMENT UPDATES
+## POST-DEPLOYMENT UPDATES
 
 ### Update Backend:
 ```bash
@@ -98,7 +98,7 @@ git push origin main
 # Vercel will auto-deploy
 ```
 
-## 📧 EMAIL CONFIGURATION
+## EMAIL CONFIGURATION
 Currently using file-based email delivery. For production emails, configure SMTP in production.rb:
 
 ```ruby
@@ -114,17 +114,11 @@ config.action_mailer.smtp_settings = {
 }
 ```
 
-## 🎫 TEST VOUCHERS IN PRODUCTION:
-- `WELCOME10` - 10% off
-- `SAVE500` - ₱500 off  
-- `FIRSTBUY15` - 15% off
-- `FREEBIE` - ₱250 off
-
-## ⚠️ IMPORTANT NOTES:
+## IMPORTANT NOTES:
 1. **Update CORS origins** in production.rb with your actual frontend domain
 2. **Replace SECRET_KEY** with actual production key  
 3. **Configure real SMTP** for email delivery
 4. **Update API URLs** after deployment
-5. **Test all voucher codes** in production
+5. **Test all functionality** in production
 
-🎉 **YOUR APP IS READY FOR PRODUCTION!**
+**YOUR GOSHOMO APP IS READY FOR PRODUCTION!**
