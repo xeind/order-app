@@ -15,7 +15,7 @@ Rails.application.configure do
   # Configure CORS for frontend
   config.middleware.insert_before 0, Rack::Cors do
     allow do
-      origins ENV["FRONTEND_URL"] || "*"  # Set FRONTEND_URL env var in production
+      origins ENV["FRONTEND_URL"] || "http://localhost:5173"  # Set FRONTEND_URL env var in production
       resource "*",
         headers: :any,
         methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
@@ -43,7 +43,7 @@ Rails.application.configure do
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
-  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+  config.logger = ActiveSupport::TaggedLogging.new(Logger.new(STDOUT))
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
@@ -90,7 +90,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Only use :id for inspections in production.
-  config.active_record.attributes_for_inspect = [ :id ]
+  # config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
