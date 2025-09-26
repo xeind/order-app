@@ -12,7 +12,7 @@ services:
         fromDatabase:
           name: order-db
           property: connectionString
-  - type: pgsql
+  - type: postgresql
     name: order-db
     databaseName: order_app_production
     user: order_app
